@@ -4,7 +4,7 @@
 
 ## 特徴
 
-- RTSP / RTMP / HLS / WebRTC を有効化
+- RTSP over TCP (RTSPT) / RTMP / HLS / WebRTC を有効化
 - `network_mode: host` を使用し、MediaMTX がホスト上で直接ポートを待ち受け
 - タイムゾーンを `Asia/Tokyo` に設定
 - 起動、更新、停止は `systemctl` ではなく `docker compose` で管理
@@ -24,7 +24,7 @@ Docker Desktop で動作確認する場合は、Docker Desktop 4.34 以降で **
 | ファイル | 用途 |
 | --- | --- |
 | `docker-compose.yml` | MediaMTX コンテナの定義 |
-| `mediamtx.yml` | RTSP / RTMP / HLS / WebRTC の基本設定 |
+| `mediamtx.yml` | RTSPT / RTMP / HLS / WebRTC の基本設定 |
 | `install.sh` | イメージを取得してサービスを起動 |
 | `update.sh` | 最新の同一メジャー版イメージを取得して再作成 |
 | `uninstall.sh` | コンテナを停止・削除 |
@@ -67,9 +67,7 @@ docker compose logs -f mediamtx
 
 | プロトコル | ポート | トランスポート | 用途 |
 | --- | ---: | --- | --- |
-| RTSP | `8554` | TCP | RTSP 制御、配信の送信・視聴 (`rtsp://HOST:8554/STREAM`) |
-| RTSP | `8000` | UDP | RTP メディア通信 |
-| RTSP | `8001` | UDP | RTCP 制御通信 |
+| RTSPT (RTSP over TCP) | `554` | TCP | TCP 経由での RTSP 送信・視聴 (`rtsp://HOST:554/STREAM`) |
 | RTMP | `1935` | TCP | OBS 等からの送信 (`rtmp://HOST:1935/STREAM`) |
 | HLS | `8888` | TCP (HTTP) | ブラウザ等での HLS 視聴 (`http://HOST:8888/STREAM/index.m3u8`) |
 | WebRTC | `8889` | TCP (HTTP) | WebRTC のシグナリング・閲覧ページ (`http://HOST:8889/STREAM`) |
@@ -83,20 +81,26 @@ webrtcAdditionalHosts: [stream.example.com]
 
 ## 利用例
 
-FFmpeg で RTSP ストリームを送信します。
+FFmpeg で RTSP over TCP (RTSPT) ストリームを送信します。
 
 ```bash
-ffmpeg -re -stream_loop -1 -i input.mp4 -c copy -f rtsp rtsp://localhost:8554/mystream
+ffmpeg -re -stream_loop -1 -i input.mp4 -c copy -f rtsp -rtsp_transport tcp rtsp://localhost:554/mystream
 ```
 
 送信したストリームは、次の URL で利用できます。
 
 | 方式 | URL |
 | --- | --- |
-| RTSP | `rtsp://HOST:8554/mystream` |
+| RTSPT | `rtsp://HOST:554/mystream` |
 | RTMP | `rtmp://HOST:1935/mystream` |
 | HLS | `http://HOST:8888/mystream/index.m3u8` |
 | WebRTC | `http://HOST:8889/mystream` |
+
+RTSP クライアント側でも TCP トランスポートを指定してください。
+
+```bash
+ffplay -rtsp_transport tcp rtsp://HOST:554/mystream
+```
 
 ## 設定変更
 

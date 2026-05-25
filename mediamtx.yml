@@ -2,7 +2,8 @@
 logLevel: info
 
 rtsp: true
-rtspAddress: :8554
+rtspTransports: [tcp]
+rtspAddress: :554
 
 rtmp: true
 rtmpAddress: :1935
