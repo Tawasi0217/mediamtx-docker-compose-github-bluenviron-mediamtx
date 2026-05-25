@@ -17,6 +17,8 @@
 
 `network_mode: host` を使用するため、Linux サーバーでの利用を想定しています。Compose ファイルでの `ports:` マッピングは不要です。ファイアウォールやクラウドのセキュリティグループでは、利用するポートを必要に応じて許可してください。
 
+Docker Desktop で動作確認する場合は、Docker Desktop 4.34 以降で **Settings > Resources > Network > Enable host networking** を有効化し、Docker Desktop を再起動してください。詳しくは [Docker の host network driver ドキュメント](https://docs.docker.com/engine/network/drivers/host/) を参照してください。
+
 ## ファイル構成
 
 | ファイル | 用途 |
@@ -65,7 +67,9 @@ docker compose logs -f mediamtx
 
 | プロトコル | ポート | トランスポート | 用途 |
 | --- | ---: | --- | --- |
-| RTSP | `8554` | TCP / UDP | 配信の送信・視聴 (`rtsp://HOST:8554/STREAM`) |
+| RTSP | `8554` | TCP | RTSP 制御、配信の送信・視聴 (`rtsp://HOST:8554/STREAM`) |
+| RTSP | `8000` | UDP | RTP メディア通信 |
+| RTSP | `8001` | UDP | RTCP 制御通信 |
 | RTMP | `1935` | TCP | OBS 等からの送信 (`rtmp://HOST:1935/STREAM`) |
 | HLS | `8888` | TCP (HTTP) | ブラウザ等での HLS 視聴 (`http://HOST:8888/STREAM/index.m3u8`) |
 | WebRTC | `8889` | TCP (HTTP) | WebRTC のシグナリング・閲覧ページ (`http://HOST:8889/STREAM`) |
