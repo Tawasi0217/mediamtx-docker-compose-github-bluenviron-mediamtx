@@ -1,10 +1,46 @@
 services:
   mediamtx:
     image: bluenviron/mediamtx:1
-    container_name: mediamtx
-    restart: unless-stopped
-    network_mode: host
+
     environment:
       TZ: Asia/Tokyo
+
     volumes:
-      - ./mediamtx.yml:/mediamtx.yml:ro
+      - /srv/mediamtx/mediamtx.yml:/mediamtx.yml:ro
+
+    ports:
+      - target: 554
+        published: 554
+        protocol: tcp
+        mode: host
+
+      - target: 1935
+        published: 1935
+        protocol: tcp
+        mode: host
+
+      - target: 8888
+        published: 8888
+        protocol: tcp
+        mode: host
+
+      - target: 8889
+        published: 8889
+        protocol: tcp
+        mode: host
+
+      - target: 8189
+        published: 8189
+        protocol: udp
+        mode: host
+
+    deploy:
+      replicas: 1
+
+      placement:
+        constraints:
+          - node.hostname == debian-z240
+
+      restart_policy:
+        condition: any
+        delay: 5s
