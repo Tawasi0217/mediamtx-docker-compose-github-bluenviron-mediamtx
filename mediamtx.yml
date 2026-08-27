@@ -1,4 +1,3 @@
-# MediaMTX basic configuration for RTSP, RTMP, HLS and WebRTC delivery.
 logLevel: info
 
 rtsp: true
@@ -15,9 +14,7 @@ webrtc: true
 webrtcAddress: :8889
 webrtcLocalUDPAddress: :8189
 
-# Keep the deployment limited to the enabled protocols above.
 srt: false
 
-# Allow streams to be published and read on any path.
 paths:
   all_others:
